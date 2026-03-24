@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tene'roen Military Academy</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===== 전역 설정 ===== */
+:root {
+  --bg-color: #07070a;
+  --gold: #c5a059;
+  --gold-glow: rgba(197, 160, 89, 0.4);
+  --text-main: #e0e0e0;
+  --text-muted: #9aa0a6;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at center, #13131a 0%, #050508 100%);
+  color: var(--text-main);
+  font-family: 'Noto Serif KR', serif;
+  overflow-x: hidden;
+  overflow-y: hidden; /* 인트로 전 스크롤 방지 */
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Cinzel', 'Noto Serif KR', serif;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ===== 입장 게이트 (인트로 화면) ===== */
+#intro-gate {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 2s ease, visibility 2s ease;
+}
+
+#enter-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 15px 40px;
+  font-size: 18px;
+  font-family: 'Noto Serif KR', serif;
+  letter-spacing: 3px;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--gold-glow);
+  transition: all 0.5s ease;
+  animation: pulse 2s infinite;
+}
+
+#enter-btn:active {
+  background: var(--gold);
+  color: #000;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px var(--gold-glow); }
+  50% { box-shadow: 0 0 25px rgba(197, 160, 89, 0.8); }
+  100% { box-shadow: 0 0 10px var(--gold-glow); }
+}
+
+/* ===== HERO (1세션 - 도입) 임팩트 연출 ===== */
+.hero {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 1;
+}
+
+.impact-title {
+  font-family: 'Noto Sans KR', sans-serif; /* 얇고 세련된 고딕체 */
+  font-weight: 300; /* 서늘한 느낌 */
+  font-size: 26px; 
+  line-height: 1.5;
+  letter-spacing: 8px; /* 자간을 넓혀서 긴장감 팽팽하게! */
+  color: #fff;
+}
+
+/* 처음엔 글씨를 전부 숨겨둠 */
+.impact-title span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(5px);
+}
+
+/* 한 줄씩 시간차로 등장 (속도 UP 버전) */
+#main-title.start-anim .line1 { animation: textReveal 1.0s ease 0.2s forwards; }
+#main-title.start-anim .line2 { animation: textReveal 1.0s ease 0.8s forwards; }
+#main-title.start-anim .line3 { animation: textReveal 1.0s ease 1.4s forwards; font-size: 18px; color: #888; }
+#main-title.start-anim .line4 { 
+  animation: textReveal 1.5s ease 2.0s forwards; 
+  font-size: 34px; 
+  font-weight: 700; /* 이 줄만 굵게! */
+  color: #8b0000; 
+  text-shadow: 0 0 20px rgba(139, 0, 0, 0.8); 
+}
+
+/* 글씨가 안개에서 나타나는 애니메이션 (절대 지우면 안 되는 부분!) */
+@keyframes textReveal {
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* ===== 1.5세션 (테마 문구 & 빌런 타샤트 배경) ===== */
+.theme-section {
+  height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative; /* 배경을 깔기 위해 필수! */
+  overflow: hidden;
+}
+
+/* 타샤트 배경 이미지 */
+.villain-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url('images/taeshat.png') center/cover no-repeat;
+  opacity: 0.35; /* 타샤트가 어둠 속에서 지켜보는 느낌 (숫자를 키우면 밝아져!) */
+  filter: grayscale(30%) contrast(120%); /* 약간 탁하고 날카로운 색감으로 보정 */
+  z-index: 0;
+}
+
+/* 위아래 자연스러운 검은색 그라데이션 (경계선 없애기) */
+.villain-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, #07070a 0%, transparent 20%, transparent 80%, #07070a 100%);
+  z-index: 1;
+}
+
+/* 글씨 스타일 */
+.tension-text {
+  position: relative;
+  z-index: 2; 
+  font-family: 'Noto Serif KR', serif;
+  font-size: 26px; 
+  line-height: 2.2; 
+  color: #c5a059; /* 네가 고른 예쁜 금색은 그대로! */
+  letter-spacing: 6px; 
+  font-weight: 700; /* 원래 300이었던 굵기를 700으로 올려서 도톰하게 만들었어! */
+  transform: scaleY(1.1); 
+  text-shadow: 0 0 20px rgba(0, 0, 0, 1), 0 0 10px rgba(0, 0, 0, 0.8); /* 까만 그림자를 이중으로 쳐서 가독성 200% 상승! */
+  word-break: keep-all; 
+}
+
+.theme-section .divider {
+  position: relative;
+  z-index: 2;
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  margin-top: 40px;
+}
+
+/* ===== 공통 섹션 ===== */
+.section {
+  padding: 80px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.section-title {
+  font-size: 28px;
+  color: var(--gold);
+  margin-bottom: 40px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(197, 160, 89, 0.2);
+}
+
+/* ===== 2세션 (아카데미 타이틀) ===== */
+.academy-bg {
+  background: linear-gradient(to bottom, rgba(7,7,10,1) 0%, rgba(7,7,10,0.5) 50%, rgba(7,7,10,1) 100%), url('images/academy.png') center/cover no-repeat;
+  padding: 120px 20px;
+}
+
+.academy-title {
+  font-size: 32px;
+  color: var(--gold);
+  margin-bottom: 60px;
+  line-height: 1.4;
+  letter-spacing: 2px;
+  text-shadow: 0 5px 15px rgba(0,0,0,0.9);
+}
+
+.quote-box {
+  background: linear-gradient(to bottom, rgba(7,7,10,0.8), rgba(7,7,10,0.8)), url('images/taeshat1.png') center/cover;
+  padding: 40px 20px;
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 4px;
+}
+
+.quote-box p {
+  font-size: 18px;
+  font-style: italic;
+  color: #fff;
+  line-height: 2;
+  margin: 0;
+}
+
+/* ===== 정보 레이아웃 (카드) ===== */
+.card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.card {
+  background: rgba(20, 20, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--gold);
+  padding: 25px 20px;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  filter: grayscale(20%) contrast(110%);
+}
+
+.card h3 {
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.card h4 {
+  font-size: 16px;
+  color: var(--gold);
+  margin-bottom: 15px;
+  font-weight: 400;
+}
+
+/* 세부 정보 텍스트 포맷 */
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-list li {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.info-label {
+  color: var(--gold);
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+.highlight-goal {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ===== 4세션 (시즌 포커스) ===== */
+.timeline {
+  text-align: left;
+  border-left: 2px solid rgba(197, 160, 89, 0.3);
+  padding-left: 20px;
+  margin-top: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.timeline-title {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.timeline-desc {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.timeline-desc span {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* ===== 스크롤 애니메이션 ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 우측 상단 BGM 컨트롤 버튼 */
+#bgm-toggle {
+  position: fixed;
+  top: 20px; right: 20px; z-index: 9000;
+  cursor: pointer;
+  background: rgba(20,20,25,0.8);
+  border: 1px solid rgba(197, 160, 89, 0.5);
+  padding: 8px 12px; border-radius: 20px;
+  color: #c5a059; font-family: 'Cinzel', serif; font-size: 10px;
+  display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<audio id="bgm" loop>
+  <source src="Veil of the Crown.mp3" type="audio/mpeg">
+</audio>
+
+<div id="intro-gate">
+  <button id="enter-btn">사관학교 진입</button>
+</div>
+
+<div id="bgm-toggle">❚❚ BGM</div>
+
+<section class="hero">
+  <div class="hero-text" id="main-title">
+    <h1 class="impact-title">
+      <span class="line1">굴복할 것인가</span><br><br>
+      <span class="line2">부술 것인가</span><br><br>
+      <span class="line3">혹은</span><br><br>
+      <span class="line4">그 모든 것을<br>삼킬 것인가</span>
+    </h1>
+  </div>
+</section>
+
+<section class="theme-section fade-up">
+  <div class="villain-bg"></div> 
+  <div class="villain-overlay"></div>
+  
+  <p class="tension-text">
+    평화와 협력이라는 깃발 아래,<br>
+    보이지 않는 전쟁이 시작되었다.
+  </p>
+  <div class="divider"></div>
+</section>
+
+<section class="section academy-bg fade-up">
+  <h1 class="academy-title">Taeneroen Royal Military Academy</h1>
+  <div class="quote-box">
+    <p>
+      "젊은 귀족이여-<br>
+      여신 에일리아의 이름으로<br>
+      그대들을 환영하노라"
+    </p>
+  </div>
+</section>
+
+<section class="section fade-up">
+  <h2 class="section-title">Route</h2>
+  <div class="card-grid">
+    <div class="card fade-up">
+      <img src="images/jude.jpg" alt="Jude">
+      <h3>비밀을 지켜라</h3>
+      <h4>주드 에반 드 살로</h4>
+      <ul class="info-list">
+        <li><span class="info-label">출신</span> 타란티아</li>
+        <li><span class="info-label">신분</span> 바리안의 호위기사</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">비밀을 지켜 멸문을 막고 무사히 졸업하기</span></li>
+      </ul>
+    </div>
+    <div class="card fade-up">
+      <img src="images/riel.jpg" alt="Riel">
+      <h3>비밀을 밝혀라</h3>
+      <h4>리엘 셰인 드 리카엘</h4>
+      <ul class="info-list">
+        <li><span class="info-label">출신</span> 다흐문</li>
+        <li><span class="info-label">신분</span> 타무스의 수행비서</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">부모님의 죽음 뒤에 감춰진 비밀을 밝혀내고, 타샤트의 가면을 벗긴다.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section fade-up">
+  <h2 class="section-title">Season Focus</h2>
+  <div class="timeline">
+    <div class="timeline-item fade-up">
+      <h3 class="timeline-title">1학년 (결속의 해)</h3>
+      <div class="timeline-desc">
+        <span>필기시험:</span> 각국 언어·사회·문화 이해도 / <strong>'매력'</strong> 스탯 적용<br><br>
+        <span>실기:</span> 타국 파트너와 공동생활 / 타국언어 독후감 / 봉사활동
+      </div>
+    </div>
+    <div class="timeline-item fade-up">
+      <h3 class="timeline-title">2학년 (충돌의 해)</h3>
+      <div class="timeline-desc">
+        <span>필기시험:</span> 전쟁대처 서술형 / <strong>'통솔'</strong> 스탯 적용<br><br>
+        <span>실기:</span> 도적 소탕, 수해 마을 복구, 반란세력 처리, 모의전 (국가별 팀전)
+      </div>
+    </div>
+    <div class="timeline-item fade-up">
+      <h3 class="timeline-title">3학년 (선별의 해)</h3>
+      <div class="timeline-desc">
+        <span>필기시험:</span> 신앙과 사상의 충돌 / <strong>'신앙'</strong> 스탯 적용<br><br>
+        <span>실기:</span> 매주 예배 참석, 이단 세력 척결, 성역 순례 (시하타 - <strong>위험도 최상</strong>)
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section fade-up">
+  <h2 class="section-title">System</h2>
+  <div class="card-grid">
+    <div class="card fade-up">
+      <img src="images/faint.png" alt="HP System">
+      <h3>1. 체력 시스템</h3>
+      <p class="timeline-desc" style="margin-top:10px;">
+        시간의 흐름 + 활동량에 따라 체력이 감소합니다.<br>
+        '0'이 되면 기절하므로 음식 섭취와 충분한 휴식으로 잘 관리해 주세요!<br>
+        <span style="color:#d44;">(기절 시 돌발 이벤트(납치 혹은 그 이상의 것)가 발생할 수 있습니다.)</span>
+      </p>
+    </div>
+    <div class="card fade-up">
+      <img src="images/angry.png" alt="Grade System">
+      <h3>2. 학점 시스템</h3>
+      <p class="timeline-desc" style="margin-top:10px;">
+        시험과 실습을 스킵하면 <strong>'C'학점</strong>이 적용됩니다.<br>
+        <strong>'F'학점</strong>을 받으면 유급되거나 퇴학당할 수 있으니 주의하세요!
+      </p>
+    </div>
+    <div class="card fade-up">
+      <img src="images/market.jpg" alt="Free Time">
+      <h3>3. 자유 시간</h3>
+      <p class="timeline-desc" style="margin-top:10px;">
+        능력치를 쌓거나 자유로운 활동을 하실 수 있습니다.<br>
+        <span>(훈련장, 도서관, 기숙사, 식당, 의무실, 무기고, 정원, 예배당, 시장, 광장)</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section fade-up">
+  <h2 class="section-title">Characters</h2>
+  <div class="card-grid">
+    
+    <div class="card fade-up">
+      <img src="images/varian.jpg" alt="Varian">
+      <h3>바리안 아르젠 폰 카엘룸</h3>
+      <h4>타란티아의 제 4황자. 21세.</h4>
+      <ul class="info-list">
+        <li><span class="info-label">외형</span> 188cm, 85kg, 갈발, 갈안, 크고 장대한 골격과 전쟁으로 다져진 근육</li>
+        <li><span class="info-label">특징</span> 카엘룸 가문 특유의 괴력</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">기다린다. 네가 말할 때 까지</span></li>
+      </ul>
+    </div>
+
+    <div class="card fade-up">
+      <img src="images/balak.png" alt="Balak">
+      <h3>발라크 아론 드 사이카이르</h3>
+      <h4>어빌리온의 제 7황자. 22세.</h4>
+      <ul class="info-list">
+        <li><span class="info-label">외형</span> 190cm, 82kg, 흑발 곱슬, 벽안</li>
+        <li><span class="info-label">특징</span> 항상 웃는 입, 웃지 않는 눈</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">'그것'을 손에 넣는다. 단, 아주 '재미있는 방법'으로.</span></li>
+      </ul>
+    </div>
+
+    <div class="card fade-up">
+      <img src="images/tamus.jpg" alt="Tamus">
+      <h3>타무스 렉스 폰 아이젠</h3>
+      <h4>다흐문의 황태자. 24세.</h4>
+      <ul class="info-list">
+        <li><span class="info-label">외형</span> 190cm, 88kg, 흑발, 흑안, 거대하고 딱딱한 몸</li>
+        <li><span class="info-label">특징</span> 비밀이 많은 신체</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">리엘을 지킨다. 다른 것은 필요 없다.</span></li>
+      </ul>
+    </div>
+
+    <div class="card fade-up">
+      <img src="images/hanin.png" alt="Hanin">
+      <h3>하닌 피아망</h3>
+      <h4>에스론의 귀족. 21세.</h4>
+      <ul class="info-list">
+        <li><span class="info-label">외형</span> 162cm, 48kg, 은발, 녹안</li>
+        <li><span class="info-label">특징</span> 계산적이고 똑부러짐</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">최우수 졸업으로 가문의 영광 누리기</span></li>
+      </ul>
+    </div>
+
+    <div class="card fade-up">
+      <img src="images/arkan.png" alt="Arkan">
+      <h3>아르칸 폰 토르카</h3>
+      <h4>에스론의 황족. 25세.</h4>
+      <ul class="info-list">
+        <li><span class="info-label">외형</span> 182cm, 78kg, 청발, 금안</li>
+        <li><span class="info-label">특징</span> 초긍정의 에너지</li>
+        <li><span class="info-label">목표</span> <span class="highlight-goal">???</span></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // 1. 입장 버튼 동작
+  const enterBtn = document.getElementById('enter-btn');
+  const introGate = document.getElementById('intro-gate');
+  const bgm = document.getElementById('bgm');
+  const mainTitle = document.getElementById('main-title');
+  const bgmToggle = document.getElementById('bgm-toggle');
+  let isPlaying = false;
+
+  enterBtn.addEventListener('click', () => {
+    bgm.play();
+    isPlaying = true;
+    
+    introGate.style.opacity = '0';
+    setTimeout(() => {
+      introGate.style.visibility = 'hidden';
+      document.body.style.overflowY = 'auto'; // 스크롤 풀림
+      mainTitle.classList.add('start-anim'); // 텍스트 떠오름
+      bgmToggle.style.display = 'block';
+    }, 1000);
+  });
+
+  // 2. BGM 끄기/켜기
+  bgmToggle.addEventListener('click', () => {
+    if (isPlaying) {
+      bgm.pause();
+      bgmToggle.innerHTML = "▶ BGM";
+      bgmToggle.style.color = "#888890";
+      bgmToggle.style.borderColor = "rgba(136, 136, 144, 0.3)";
+    } else {
+      bgm.play();
+      bgmToggle.innerHTML = "❚❚ BGM";
+      bgmToggle.style.color = "#c5a059";
+      bgmToggle.style.borderColor = "rgba(197, 160, 89, 0.5)";
+    }
+    isPlaying = !isPlaying;
+  });
+
+  // 3. 스크롤 애니메이션 (페이드 인)
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.fade-up').forEach((el) => {
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
