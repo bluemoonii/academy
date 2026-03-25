@@ -18,14 +18,22 @@
   --text-muted: #9aa0a6;
 }
 
+/* PC 화면 양옆 빈 공간을 까맣게 채워주는 역할! */
+html {
+  background-color: #030305; 
+}
+
 body {
-  margin: 0;
+  margin: 0 auto; /* 화면 가운데로 정렬! */
+  max-width: 480px; /* 모바일 기본 너비인 480px 이상으로는 절대 안 늘어나게 막음! */
   background-color: var(--bg-color);
   background-image: radial-gradient(circle at center, #13131a 0%, #050508 100%);
   color: var(--text-main);
   font-family: 'Noto Serif KR', serif;
   overflow-x: hidden;
   overflow-y: hidden; /* 인트로 전 스크롤 방지 */
+  position: relative;
+  box-shadow: 0 0 50px rgba(0,0,0,0.8); /* PC로 볼 때 양옆에 깊은 그림자를 줘서 입체감 상승! */
 }
 
 h1, h2, h3, h4 {
